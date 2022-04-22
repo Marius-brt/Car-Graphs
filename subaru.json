@@ -116,5 +116,11 @@
     "aerodynamics": {
         "drag": 0.33,
         "frontArea": 2.04386688
+    },
+    "infos": {
+        "model": "Impreza WRX",
+        "brand": "Subaru",
+        "year": "2004",
+        "doors": 5
     }
 }

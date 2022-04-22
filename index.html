@@ -9,6 +9,8 @@
     <style>
         body {
             font-family: sans-serif;
+            display: flex;
+            justify-content: center;
         }
         
         .container {
@@ -47,69 +49,82 @@
 
 <body>
     <a href="" id="downloadAnchorElem" style="display: none;"></a>
-    <a href="https://github.com/Marius-brt/Car-Graphs" target="_blank">Github</a>
     <div>
-        <h3>Load template</h3>
-        <button onclick="loadFromUrl('https://raw.githubusercontent.com/Marius-brt/Car-Graphs/master/subaru.json')">Subaru Impreza Wrx 2004</button>
-    </div>
-    <div class="container">
-        <div class="settings">
-            <h3>Engine</h3>
-            <div style="width: 100%; margin-bottom: 5px;">
-                <label>RPM</label>
-                <label style="margin-left: 72px;">Torque</label>
+        <a href="https://github.com/Marius-brt/Car-Graphs" target="_blank">Github</a>
+        <div>
+            <h3>Load template</h3>
+            <button onclick="loadFromUrl('https://raw.githubusercontent.com/Marius-brt/Car-Graphs/master/subaru.json')">Subaru Impreza Wrx 2004</button>
+        </div>
+        <div class="container">
+            <div class="settings">
+                <h3>Car infos</h3>
+                <label>Brand</label>
+                <input type="text" id="brand" noDefault notNumber>
+                <label>Model</label>
+                <input type="text" id="model" noDefault notNumber>
+                <label>Year</label>
+                <input type="text" id="year" noDefault value="2022">
+                <label>Doors</label>
+                <input type="text" id="doors" noDefault value="5">
             </div>
-            <div id="engin-data"></div>
-            <button onclick="addEngineData()">+</button>
-        </div>
-        <div class="settings">
-            <h3>Gearbox</h3>
-            <div id="gears"></div>
-            <div style="flex-direction: row !important; justify-content: center;">
-                <button onclick="addGear()">+</button>
-                <button onclick="removeGear()">-</button>
+            <div class="settings">
+                <h3>Engine</h3>
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <label>RPM</label>
+                    <label style="margin-left: 72px;">Torque (N.m)</label>
+                </div>
+                <div id="engin-data"></div>
+                <button onclick="addEngineData()">+</button>
             </div>
-            <label for="reverseGear">Reverse gear</label>
-            <input type="text" id="reverseGear">
-            <label for="finalRatio">Final ratio</label>
-            <input type="text" id="finalRatio">
+            <div class="settings">
+                <h3>Gearbox</h3>
+                <div id="gears"></div>
+                <div style="flex-direction: row !important; justify-content: center;">
+                    <button onclick="addGear()">+</button>
+                    <button onclick="removeGear()">-</button>
+                </div>
+                <label for="reverseGear">Reverse gear</label>
+                <input type="text" id="reverseGear">
+                <label for="finalRatio">Final ratio</label>
+                <input type="text" id="finalRatio">
+            </div>
+            <div class="settings">
+                <h3>Wheels</h3>
+                <label for="transmission">Transmission</label>
+                <select id="transmission">
+					<option value="0">All wheels</option>
+					<option value="1">Traction</option>
+					<option value="2">Propulsion</option>
+				</select>
+                <label for="wheelDiameter">Wheels diameter (Meter)</label>
+                <input type="text" id="wheelDiameter">
+            </div>
+            <div class="settings">
+                <h3>Aerodynamics</h3>
+                <label for="dragCoefficient">Drag coefficient</label>
+                <input type="text" id="dragCoefficient">
+                <label for="frontArea">Front area (m²)</label>
+                <input type="text" id="frontArea">
+            </div>
         </div>
-        <div class="settings">
-            <h3>Wheels</h3>
-            <label for="transmission">Transmission</label>
-            <select id="transmission">
-				<option value="0">All wheels</option>
-				<option value="1">Traction</option>
-				<option value="2">Propulsion</option>
-			</select>
-            <label for="wheelDiameter">Wheels diameter (Meter)</label>
-            <input type="text" id="wheelDiameter">
+        <div>
+            <button onclick="update()">Calculate</button>
+            <button onclick="exportData()">Export</button>
+            <input id="file" type="file" placeholder="Import" accept=".json" />
         </div>
-        <div class="settings">
-            <h3>Aerodynamics</h3>
-            <label for="dragCoefficient">Drag coefficient</label>
-            <input type="text" id="dragCoefficient">
-            <label for="frontArea">Front area (m²)</label>
-            <input type="text" id="frontArea">
+        <h3>RPM</h3>
+        <span>Engine => RPM at motor output<br>Gears => RPM at gearbox output</span>
+        <div style="width: 1000px;">
+            <canvas id="torque"></canvas>
         </div>
-    </div>
-    <div>
-        <button onclick="update()">Calculate</button>
-        <button onclick="exportData()">Export</button>
-        <input id="file" type="file" placeholder="Import" accept=".json" />
-    </div>
-    <h3>RPM</h3>
-    <span>Engine => RPM at motor output<br>Gears => RPM at gearbox output</span>
-    <div style="width: 1000px;">
-        <canvas id="torque"></canvas>
-    </div>
-    <h3>Speed</h3>
-    <div style="width: 1000px;">
-        <canvas id="speed"></canvas>
-    </div>
-    <h3>Air drag</h3>
-    <div style="width: 1000px;">
-        <canvas id="drag"></canvas>
+        <h3>Speed</h3>
+        <div style="width: 1000px;">
+            <canvas id="speed"></canvas>
+        </div>
+        <h3>Air drag</h3>
+        <div style="width: 1000px;">
+            <canvas id="drag"></canvas>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>

@@ -28,15 +28,20 @@ $(document).ready(function() {
         gears.push($(this));
     });
     $.each($("input"), function() {
-        if ($(this).val() == "") $(this).val(1);
+        if ($(this).val() == "" && !$(this).is("[noDefault]")) $(this).val(1);
     });
 });
+
 const reverseGear = document.getElementById("reverseGear");
 const finalRatio = document.getElementById("finalRatio");
 const wheelDiameter = document.getElementById("wheelDiameter");
 const transmission = document.getElementById("transmission");
 const dragCoeff = document.getElementById("dragCoefficient");
 const frontArea = document.getElementById("frontArea");
+const brand = document.getElementById("brand");
+const model = document.getElementById("model");
+const year = document.getElementById("year");
+const doors = document.getElementById("doors");
 
 const chart = new Chart(ctx, {
     type: "scatter",
@@ -180,15 +185,17 @@ const chart3 = new Chart(ctx3, {
 });
 
 $(".container").on("paste keyup", "input", function(e) {
-    var charCode = e.which ? e.which : e.keyCode;
-    if (charCode != 110 && charCode != 188)
-        $(this).val(
-            $(this)
-            .val()
-            .replace(/[^0-9.,]/g, "")
-        );
-    $(this).val($(this).val().replace(/,/g, "."));
-    if ($(this).val() == "") $(this).val(1);
+    if (!$(this).is("[notNumber]")) {
+        var charCode = e.which ? e.which : e.keyCode;
+        if (charCode != 110 && charCode != 188)
+            $(this).val(
+                $(this)
+                .val()
+                .replace(/[^0-9.,]/g, "")
+            );
+        $(this).val($(this).val().replace(/,/g, "."));
+        if ($(this).val() == "") $(this).val(1);
+    }
 });
 
 function calcGear(ratio) {
@@ -326,6 +333,12 @@ function exportData() {
             drag: parseFloat(dragCoeff.value),
             frontArea: parseFloat(frontArea.value),
         },
+        infos: {
+            model: model.value,
+            brand: brand.value,
+            year: year.value,
+            doors: Math.round(parseFloat(doors.value)) || 5,
+        },
     };
     $.each($(".gear"), function() {
         dt.gears.push(parseFloat($(this).val()));
@@ -366,6 +379,10 @@ function loadData(data) {
     transmission.value = data.transmission || 0;
     dragCoeff.value = data.aerodynamics.drag || 0.5;
     frontArea.value = data.aerodynamics.frontArea || 1;
+    year.value = data.infos.year || 2022;
+    doors.value = data.infos.doors || 5;
+    model.value = data.infos.model || "";
+    brand.value = data.infos.brand || "";
     $("#gears").empty();
     for (i = 0; i < data.gears.length; i++) {
         $("#gears").append(`<label for="gear${i + 1}">${gearsNames[i]} gear</label>
