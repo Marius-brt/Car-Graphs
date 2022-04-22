@@ -108,10 +108,10 @@
         "minRpm": 750,
         "maxRpm": 7000
     },
-    "wheelDiameter": 0.43,
+    "wheelDiameter": 0.6096,
     "transmission": 0,
-    "gears": [3.636, 2.235, 1.521, 1.137, 0.971, 0.756],
-    "reverseGear": 3.545,
+    "gears": [3.454, 1.947, 1.366, 0.972, 0.738],
+    "reverseGear": 3.333,
     "finalRatio": 3.9,
     "aerodynamics": {
         "drag": 0.33,
