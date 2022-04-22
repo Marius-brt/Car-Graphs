@@ -358,40 +358,48 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
+function loadData(data) {
+    engine = data.engine.graph;
+    reverseGear.value = data.reverseGear || 1;
+    finalRatio.value = data.finalRatio || 1;
+    wheelDiameter.value = data.wheelDiameter || 0.5;
+    transmission.value = data.transmission || 0;
+    dragCoeff.value = data.aerodynamics.drag || 0.5;
+    frontArea.value = data.aerodynamics.frontArea || 1;
+    $("#gears").empty();
+    for (i = 0; i < data.gears.length; i++) {
+        $("#gears").append(`<label for="gear${i + 1}">${gearsNames[i]} gear</label>
+				<input type="text" class="gear" id="gear${i + 1}" value="${data.gears[i]}">`);
+    }
+    $("#engin-data").empty();
+    for (i = 0; i < data.engine.graph.length; i++) {
+        $("#engin-data").append(`
+	<div class="engineDt" style="display: flex; flex-direction: row;" id="engineDt${
+    i + 1
+  }">
+		<div>
+		<input type="text" value="${data.engine.graph[i].x}">
+		</div>
+		<div>
+		<input type="text" value="${data.engine.graph[i].y}">
+		</div>
+		<button onclick="removeEngineData(${i + 1})">X</button>
+	</div>`);
+    }
+    update();
+}
+
 $("#file").on("change", function(e) {
     var file = e.target.files[0];
     var path = (window.URL || window.webkitURL).createObjectURL(file);
     readTextFile(path, function(text) {
-        var data = JSON.parse(text);
-        engine = data.engine.graph;
-        reverseGear.value = data.reverseGear || 1;
-        finalRatio.value = data.finalRatio || 1;
-        wheelDiameter.value = data.wheelDiameter || 0.5;
-        transmission.value = data.transmission || 0;
-        dragCoeff.value = data.aerodynamics.drag || 0.5;
-        frontArea.value = data.aerodynamics.frontArea || 1;
-        $("#gears").empty();
-        for (i = 0; i < data.gears.length; i++) {
-            $("#gears").append(`<label for="gear${i + 1}">${
-        gearsNames[i]
-      } gear</label>
-					<input type="text" class="gear" id="gear${i + 1}" value="${data.gears[i]}">`);
-        }
-        $("#engin-data").empty();
-        for (i = 0; i < data.engine.graph.length; i++) {
-            $("#engin-data").append(`
-		<div class="engineDt" style="display: flex; flex-direction: row;" id="engineDt${
-      i + 1
-    }">
-			<div>
-			<input type="text" value="${data.engine.graph[i].x}">
-			</div>
-			<div>
-			<input type="text" value="${data.engine.graph[i].y}">
-			</div>
-			<button onclick="removeEngineData(${i + 1})">X</button>
-		</div>`);
-        }
-        update();
+        loadData(JSON.parse(text));
     });
 });
+
+function loadFromUrl(url) {
+    fetch(url)
+        .then((res) => res.json())
+        .then((out) => loadData(out))
+        .catch((err) => alert(err));
+}
