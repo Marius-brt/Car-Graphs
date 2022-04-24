@@ -208,8 +208,19 @@ function calcSpeed(ratio) {
     let result = [];
     const fr = finalRatio.value || 1;
     engine.forEach((el) => {
+        const radius = diameter / 2;
+        const rpm = el.x / ratio / fr;
+        const torque = el.y * ratio * fr;
+        const speed = (rpm * (2 * Math.PI * radius)) / 60;
+        const tireF = torque / radius;
+        const drag = calcDrag(speed);
+        const total = tireF - drag;
+        //const speed = ((el.x / ratio / fr) * diameter * Math.PI * 60) / 1000;
         result.push({
-            x: ((el.x / ratio / fr) * diameter * Math.PI * 60) / 1000,
+            x: drag,
+            /*Math.sqrt(
+                                                       (2 * 1370 * speed * 3.6) / (1.225 * dragCoeff.value * frontArea.value)
+                                                   )*/
             y: el.y * ratio * fr,
         });
     });
@@ -393,6 +404,7 @@ function loadData(data) {
     doors.value = data.infos.doors || 5;
     model.value = data.infos.model || "";
     brand.value = data.infos.brand || "";
+    console.log(data);
     if (data.tire) {
         profileRatio.value = data.tire.width || 1;
         aspectRatio.value = data.tire.ratio || 1;
