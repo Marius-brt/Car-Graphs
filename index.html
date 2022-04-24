@@ -66,7 +66,7 @@
         <button onclick="update()">Calculate</button>
         <button onclick="exportData()">Export as JSON</button>
         <button onclick="document.getElementById('file').click()">Import JSON</button>
-        <button onclick="location.reload()">Reset</button>
+        <button onclick="location.reload(true)">Reset</button>
         <input id="file" type="file" style="visibility:hidden;" accept=".json" />
     </div>
     <div class="container">
@@ -93,9 +93,9 @@
         <div class="settings">
             <h3>Gearbox</h3>
             <div id="gears"></div>
-            <div style="flex-direction: row !important; justify-content: center;">
-                <button onclick="addGear()">+</button>
-                <button onclick="removeGear()">-</button>
+            <div style="flex-direction: row !important; justify-content: center; margin-bottom: 10px;">
+                <button onclick="addGear()">Add gear</button>
+                <button onclick="removeGear()">Remove gear</button>
             </div>
             <label for="reverseGear">Reverse gear</label>
             <input type="text" id="reverseGear">
@@ -110,8 +110,14 @@
 				<option value="1">Traction</option>
 				<option value="2">Propulsion</option>
 			</select>
-            <label for="wheelDiameter">Wheels diameter (Meter)</label>
-            <input type="text" id="wheelDiameter">
+            <label>Tires size</label>
+            <div style="display: flex; justify-content: space-between;">
+                <input style="width: 25%;" type="text" id="profileRatio">
+                <span>/</span>
+                <input style="width: 25%;" type="text" id="aspectRatio">
+                <span>R</span>
+                <input style="width: 25%;" type="text" id="rimDiameter">
+            </div>
         </div>
         <div class="settings">
             <h3>Aerodynamics</h3>

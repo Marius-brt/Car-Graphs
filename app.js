@@ -23,18 +23,13 @@ const gearsColors = [
 ];
 
 let gears = [];
-$(document).ready(function() {
-    $.each($(".gear"), function() {
-        gears.push($(this));
-    });
-    $.each($("input"), function() {
-        if ($(this).val() == "" && !$(this).is("[noDefault]")) $(this).val(1);
-    });
-});
+let diameter = 0;
 
 const reverseGear = document.getElementById("reverseGear");
 const finalRatio = document.getElementById("finalRatio");
-const wheelDiameter = document.getElementById("wheelDiameter");
+const profileRatio = document.getElementById("profileRatio");
+const aspectRatio = document.getElementById("aspectRatio");
+const rimDiameter = document.getElementById("rimDiameter");
 const transmission = document.getElementById("transmission");
 const dragCoeff = document.getElementById("dragCoefficient");
 const frontArea = document.getElementById("frontArea");
@@ -194,7 +189,6 @@ $(".container").on("paste keyup", "input", function(e) {
                 .replace(/[^0-9.,]/g, "")
             );
         $(this).val($(this).val().replace(/,/g, "."));
-        if ($(this).val() == "") $(this).val(1);
     }
 });
 
@@ -215,7 +209,7 @@ function calcSpeed(ratio) {
     const fr = finalRatio.value || 1;
     engine.forEach((el) => {
         result.push({
-            x: ((el.x / ratio / fr) * wheelDiameter.value * Math.PI * 60) / 1000,
+            x: ((el.x / ratio / fr) * diameter * Math.PI * 60) / 1000,
             y: el.y * ratio * fr,
         });
     });
@@ -228,6 +222,11 @@ function calcDrag(speed) {
 }
 
 function update() {
+    diameter =
+        ((((profileRatio.value || 1) * (aspectRatio.value || 1)) / 2540) * 2 +
+            (parseInt(rimDiameter.value) || 1)) *
+        0.0254;
+
     engine = [];
     gears = [];
     $.each($(".gear"), function() {
@@ -321,10 +320,14 @@ function exportData() {
     const dt = {
         engine: {
             graph: [],
-            minRpm: engine.length > 0 ? engine[0].x : 0,
-            maxRpm: engine.length > 0 ? engine[engine.length - 1].x : 0,
+            minRpm: 0,
+            maxRpm: 0,
         },
-        wheelDiameter: parseFloat(wheelDiameter.value),
+        tire: {
+            width: parseInt(profileRatio.value) || 1,
+            ratio: parseInt(aspectRatio.value) || 1,
+            diameter: parseInt(rimDiameter.value) || 1,
+        },
         transmission: parseInt(transmission.value),
         gears: [],
         reverseGear: parseFloat(reverseGear.value),
@@ -340,6 +343,14 @@ function exportData() {
             doors: Math.round(parseFloat(doors.value)) || 5,
         },
     };
+    let min = engine.length > 0 ? engine[0].x : 0,
+        max = 0;
+    engine.forEach((el) => {
+        if (el.x < min) min = el.x;
+        if (el.x > max) max = el.x;
+    });
+    dt.engine.minRpm = min;
+    dt.engine.maxRpm = max;
     $.each($(".gear"), function() {
         dt.gears.push(parseFloat($(this).val()));
     });
@@ -375,7 +386,6 @@ function loadData(data) {
     engine = data.engine.graph;
     reverseGear.value = data.reverseGear || 1;
     finalRatio.value = data.finalRatio || 1;
-    wheelDiameter.value = data.wheelDiameter || 0.5;
     transmission.value = data.transmission || 0;
     dragCoeff.value = data.aerodynamics.drag || 0.5;
     frontArea.value = data.aerodynamics.frontArea || 1;
@@ -383,6 +393,11 @@ function loadData(data) {
     doors.value = data.infos.doors || 5;
     model.value = data.infos.model || "";
     brand.value = data.infos.brand || "";
+    if (data.tire) {
+        profileRatio.value = data.tire.width || 1;
+        aspectRatio.value = data.tire.ratio || 1;
+        rimDiameter.value = data.tire.diameter || 1;
+    }
     $("#gears").empty();
     for (i = 0; i < data.gears.length; i++) {
         $("#gears").append(`<label for="gear${i + 1}">${gearsNames[i]} gear</label>

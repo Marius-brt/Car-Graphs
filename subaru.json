@@ -108,7 +108,11 @@
         "minRpm": 750,
         "maxRpm": 7000
     },
-    "wheelDiameter": 0.6096,
+    "tire": {
+        "width": 215,
+        "ratio": 45,
+        "diameter": 17
+    },
     "transmission": 0,
     "gears": [3.454, 1.947, 1.366, 0.972, 0.738],
     "reverseGear": 3.333,
