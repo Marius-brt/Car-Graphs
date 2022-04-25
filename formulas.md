@@ -128,4 +128,7 @@ $$T_t = i_x \cdot i_0 \cdot T_e \cdot \eta_d$$
 
 ### Transmission rpm
 
-$$N_e = \frac{30}{\pi} \cdot \omega_t \cdot i_x \cdot i_0$$
+```math
+N_e = \frac{30}{\pi} \cdot \omega_t \cdot i_x \cdot i_0
+```
+
