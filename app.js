@@ -205,25 +205,50 @@ function calcGear(ratio) {
 }
 
 function calcSpeed(ratio) {
+    console.log("oui");
     let result = [];
     const fr = finalRatio.value || 1;
-    engine.forEach((el) => {
-        const radius = diameter / 2;
-        const rpm = el.x / ratio / fr;
-        const torque = el.y * ratio * fr;
-        const speed = (rpm * (2 * Math.PI * radius)) / 60;
-        const tireF = torque / radius;
-        const drag = calcDrag(speed);
-        const total = tireF - drag;
-        //const speed = ((el.x / ratio / fr) * diameter * Math.PI * 60) / 1000;
-        result.push({
-            x: drag,
-            /*Math.sqrt(
-                                                       (2 * 1370 * speed * 3.6) / (1.225 * dragCoeff.value * frontArea.value)
-                                                   )*/
-            y: el.y * ratio * fr,
-        });
+    let speed = 0;
+    result.push({
+        x: 0,
+        y: 0,
     });
+    for (i = 1; i <= 60; i++) {
+        const angular = (2000 / (ratio * fr)) * (Math.PI / 60);
+        console.log(angular);
+        const torque = 142;
+        const velocity = angular * (diameter / 2);
+        const acc = (torque / (1370 * velocity)) * angular;
+        result.push({
+            x: i,
+            y: velocity + acc,
+        });
+        /*const wheelTorque = 2000 / (ratio * fr);
+                const wheelF = wheelTorque / (diameter * 2);
+                const acc = wheelF / 1370;
+                speed += acc / (diameter * 2);
+                result.push({
+                    x: i,
+                    y: speed * (diameter / 2) * 3.6,
+                });*/
+    }
+    /*engine.forEach((el) => {
+                                                                        const radius = diameter / 2;
+                                                                        const rpm = el.x / ratio / fr;
+                                                                        const torque = el.y * ratio * fr;
+                                                                        const speed = (rpm * (2 * Math.PI * radius)) / 60;
+                                                                        const tireF = torque / radius;
+                                                                        const drag = calcDrag(speed);
+                                                                        const total = tireF - drag;
+                                                                        //const speed = ((el.x / ratio / fr) * diameter * Math.PI * 60) / 1000;
+                                                                        result.push({
+                                                                            x: drag,*/
+    /*Math.sqrt(
+                                                                                                               (2 * 1370 * speed * 3.6) / (1.225 * dragCoeff.value * frontArea.value)
+                                                                                                           )*/
+    /*y: el.y * ratio * fr,
+        });
+});*/
     return result;
 }
 
@@ -271,7 +296,9 @@ function update() {
     }
     chart.update();
     chart2.data.datasets = [];
+    console.log(gears);
     for (i = 0; i < gears.length; i++) {
+        console.log(i);
         chart2.data.datasets.push({
             label: gearsNames[i] + " gear",
             data: calcSpeed(gears[i].val() || 1),
@@ -404,7 +431,6 @@ function loadData(data) {
     doors.value = data.infos.doors || 5;
     model.value = data.infos.model || "";
     brand.value = data.infos.brand || "";
-    console.log(data);
     if (data.tire) {
         profileRatio.value = data.tire.width || 1;
         aspectRatio.value = data.tire.ratio || 1;
